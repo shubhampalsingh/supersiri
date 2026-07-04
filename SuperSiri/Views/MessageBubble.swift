@@ -10,47 +10,73 @@ struct MessageBubble: View {
     @State private var showThinking = false
 
     var body: some View {
-        HStack {
-            if role == .user { Spacer(minLength: 40) }
+        HStack(alignment: .bottom, spacing: 8) {
+            if role == .user {
+                Spacer(minLength: 48)
+            } else {
+                BrandOrb(size: 26)
+                    .padding(.bottom, 4)
+            }
 
-            VStack(alignment: role == .user ? .trailing : .leading, spacing: 4) {
-                if role == .assistant, let modelName {
-                    Text(modelName)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-
+            VStack(alignment: role == .user ? .trailing : .leading, spacing: 6) {
                 if let imageData, let uiImage = UIImage(data: imageData) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: 220, maxHeight: 220)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
 
                 if role == .assistant, !thinking.isEmpty {
-                    DisclosureGroup(isExpanded: $showThinking) {
+                    Button {
+                        withAnimation(.spring(duration: 0.3)) { showThinking.toggle() }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "brain")
+                            Text(showThinking ? "Hide reasoning" : "Reasoning")
+                            Image(systemName: "chevron.down")
+                                .rotationEffect(.degrees(showThinking ? 180 : 0))
+                        }
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+
+                    if showThinking {
                         Text(thinking)
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    } label: {
-                        Label("Reasoning", systemImage: "brain")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .padding(10)
+                            .background(Theme.card, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .strokeBorder(Theme.hairline, lineWidth: 1)
+                            )
                     }
-                    .padding(8)
-                    .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
                 }
 
-                Text(LocalizedStringKey(text)) // renders basic Markdown
-                    .textSelection(.enabled)
-                    .padding(12)
-                    .background(bubbleBackground, in: RoundedRectangle(cornerRadius: 18))
-                    .foregroundStyle(role == .user ? .white : .primary)
+                if !text.isEmpty {
+                    Text(LocalizedStringKey(text)) // renders basic Markdown
+                        .textSelection(.enabled)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(bubbleBackground)
+                        .foregroundStyle(role == .user ? .white : .primary)
+                        .clipShape(bubbleShape)
+                        .overlay {
+                            if role == .assistant {
+                                bubbleShape.strokeBorder(Theme.hairline, lineWidth: 1)
+                            }
+                        }
+                }
 
                 if role == .assistant {
-                    HStack(spacing: 16) {
+                    HStack(spacing: 8) {
+                        if let modelName {
+                            Text(modelName)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
                         Button {
                             UIPasteboard.general.string = text
                         } label: {
@@ -65,19 +91,41 @@ struct MessageBubble: View {
                             Image(systemName: "square.and.arrow.up")
                         }
                     }
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundStyle(.secondary)
-                    .padding(.leading, 4)
+                    .padding(.leading, 2)
                 }
             }
 
-            if role == .assistant { Spacer(minLength: 40) }
+            if role == .assistant { Spacer(minLength: 48) }
         }
     }
 
-    private var bubbleBackground: some ShapeStyle {
+    private var bubbleShape: UnevenRoundedRectangle {
+        // Squared-off corner on the "speaking" side, like a real chat tail.
         role == .user
-            ? AnyShapeStyle(LinearGradient(colors: [.purple, .indigo], startPoint: .topLeading, endPoint: .bottomTrailing))
-            : AnyShapeStyle(Color(.secondarySystemBackground))
+            ? UnevenRoundedRectangle(
+                topLeadingRadius: Theme.bubbleRadius,
+                bottomLeadingRadius: Theme.bubbleRadius,
+                bottomTrailingRadius: 6,
+                topTrailingRadius: Theme.bubbleRadius,
+                style: .continuous
+            )
+            : UnevenRoundedRectangle(
+                topLeadingRadius: Theme.bubbleRadius,
+                bottomLeadingRadius: 6,
+                bottomTrailingRadius: Theme.bubbleRadius,
+                topTrailingRadius: Theme.bubbleRadius,
+                style: .continuous
+            )
+    }
+
+    @ViewBuilder
+    private var bubbleBackground: some View {
+        if role == .user {
+            Theme.accent
+        } else {
+            Theme.card
+        }
     }
 }

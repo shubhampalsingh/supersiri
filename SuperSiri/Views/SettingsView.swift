@@ -9,6 +9,21 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
+                    HStack(spacing: 16) {
+                        BrandOrb(size: 56)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("SuperSiri")
+                                .font(Theme.display(22))
+                            Text("Your AI, supercharged")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                    .listRowBackground(Color.clear)
+                }
+
+                Section {
                     SecureField("sk-ant-…", text: $anthropicKey)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()

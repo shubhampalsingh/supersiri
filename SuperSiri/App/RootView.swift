@@ -18,7 +18,7 @@ struct RootView: View {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
         }
-        .tint(.purple)
+        .tint(Theme.ember)
     }
 }
 

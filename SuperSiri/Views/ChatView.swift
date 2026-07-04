@@ -14,12 +14,15 @@ struct ChatView: View {
     @FocusState private var inputFocused: Bool
 
     var body: some View {
-        VStack(spacing: 0) {
-            messageList
-            if let statusText = viewModel.statusText {
-                statusPill(statusText)
+        ZStack {
+            Theme.backdrop
+            VStack(spacing: 0) {
+                messageList
+                if let statusText = viewModel.statusText {
+                    statusPill(statusText)
+                }
+                inputBar
             }
-            inputBar
         }
         .navigationTitle(conversation.model.displayName)
         .navigationBarTitleDisplayMode(.inline)
@@ -143,55 +146,70 @@ struct ChatView: View {
                 .padding(.horizontal)
             }
 
-            HStack(alignment: .bottom, spacing: 8) {
+            HStack(alignment: .bottom, spacing: 10) {
                 PhotosPicker(selection: $photoItem, matching: .images) {
-                    Image(systemName: "photo")
-                        .font(.title3)
-                        .foregroundStyle(.purple)
+                    Image(systemName: "plus")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(Theme.ember)
+                        .frame(width: 34, height: 34)
+                        .background(Theme.ember.opacity(0.12), in: Circle())
                 }
-                .padding(.bottom, 10)
 
                 Button {
                     speech.toggleRecording()
                 } label: {
                     Image(systemName: speech.isRecording ? "mic.fill" : "mic")
-                        .font(.title3)
-                        .foregroundStyle(speech.isRecording ? .red : .purple)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(speech.isRecording ? .white : Theme.ember)
+                        .frame(width: 34, height: 34)
+                        .background(
+                            speech.isRecording ? AnyShapeStyle(Color.red) : AnyShapeStyle(Theme.ember.opacity(0.12)),
+                            in: Circle()
+                        )
                         .symbolEffect(.pulse, isActive: speech.isRecording)
                 }
-                .padding(.bottom, 10)
 
                 TextField("Ask anything…", text: $draft, axis: .vertical)
                     .lineLimit(1...5)
-                    .padding(10)
-                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 20))
+                    .padding(.vertical, 7)
                     .focused($inputFocused)
 
                 if viewModel.isStreaming {
                     Button {
                         viewModel.stop()
                     } label: {
-                        Image(systemName: "stop.circle.fill")
-                            .font(.title)
-                            .foregroundStyle(.red)
+                        Image(systemName: "stop.fill")
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 34, height: 34)
+                            .background(Color.red, in: Circle())
                     }
-                    .padding(.bottom, 4)
                 } else {
                     Button {
                         sendDraft()
                     } label: {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .font(.title)
-                            .foregroundStyle(canSend ? .purple : .gray)
+                        Image(systemName: "arrow.up")
+                            .font(.body.weight(.bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 34, height: 34)
+                            .background(
+                                canSend ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(Color.gray.opacity(0.5)),
+                                in: Circle()
+                            )
                     }
                     .disabled(!canSend)
-                    .padding(.bottom, 4)
+                    .animation(.spring(duration: 0.25), value: canSend)
                 }
             }
-            .padding(.horizontal)
+            .padding(8)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                    .strokeBorder(Theme.hairline, lineWidth: 1)
+            )
+            .padding(.horizontal, 12)
         }
         .padding(.vertical, 8)
-        .background(.bar)
     }
 
     private var canSend: Bool {

@@ -13,7 +13,7 @@ struct VoiceModeView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(colors: [.black, .indigo.opacity(0.6)], startPoint: .top, endPoint: .bottom)
+            LinearGradient(colors: [Theme.ink, Theme.ember.opacity(0.35)], startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
 
             VStack(spacing: 24) {
@@ -63,16 +63,26 @@ struct VoiceModeView: View {
             controller.orbTapped()
         } label: {
             ZStack {
+                // Soft outer glow rings
+                Circle()
+                    .fill(Theme.ember.opacity(0.16))
+                    .frame(width: 210, height: 210)
+                    .blur(radius: 24)
+                Circle()
+                    .strokeBorder(.white.opacity(0.12), lineWidth: 1)
+                    .frame(width: 176, height: 176)
+
                 Circle()
                     .fill(
                         RadialGradient(
                             colors: orbColors,
-                            center: .center,
+                            center: .init(x: 0.38, y: 0.32),
                             startRadius: 10,
                             endRadius: 90
                         )
                     )
                     .frame(width: 140, height: 140)
+                    .shadow(color: Theme.ember.opacity(0.5), radius: 30, y: 8)
                     .scaleEffect(controller.phase == .listening ? 1.08 : 1.0)
                     .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: controller.phase)
 
@@ -87,9 +97,9 @@ struct VoiceModeView: View {
     private var orbColors: [Color] {
         switch controller.phase {
         case .idle: return [.gray, .black]
-        case .listening: return [.purple, .indigo]
-        case .thinking: return [.orange, .purple]
-        case .speaking: return [.teal, .indigo]
+        case .listening: return [Theme.amber, Theme.ember]
+        case .thinking: return [.white.opacity(0.9), Theme.ember]
+        case .speaking: return [Theme.ember, Theme.ink]
         }
     }
 

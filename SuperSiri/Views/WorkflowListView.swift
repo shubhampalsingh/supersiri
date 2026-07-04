@@ -9,51 +9,44 @@ struct WorkflowListView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ZStack {
+                Theme.backdrop
+
                 if workflows.isEmpty {
-                    ContentUnavailableView(
-                        "No workflows",
-                        systemImage: "bolt.fill",
-                        description: Text("Workflows chain AI steps together to automate repetitive tasks. Create one to get started.")
-                    )
+                    emptyState
                 } else {
-                    List {
-                        Section {
+                    ScrollView {
+                        LazyVStack(spacing: 10) {
                             ForEach(workflows) { workflow in
                                 NavigationLink(value: workflow) {
-                                    HStack(spacing: 12) {
-                                        Image(systemName: workflow.icon)
-                                            .font(.title3)
-                                            .foregroundStyle(.purple)
-                                            .frame(width: 32)
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(workflow.name).font(.headline)
-                                            Text(workflow.summary.isEmpty ? "\(workflow.steps.count) steps" : workflow.summary)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                                .lineLimit(2)
-                                        }
-                                    }
-                                    .padding(.vertical, 2)
+                                    workflowRow(workflow)
                                 }
-                                .swipeActions {
+                                .buttonStyle(.plain)
+                                .contextMenu {
+                                    Button {
+                                        editingWorkflow = workflow
+                                    } label: {
+                                        Label("Edit", systemImage: "pencil")
+                                    }
                                     Button(role: .destructive) {
                                         context.delete(workflow)
                                         try? context.save()
                                     } label: {
                                         Label("Delete", systemImage: "trash")
                                     }
-                                    Button {
-                                        editingWorkflow = workflow
-                                    } label: {
-                                        Label("Edit", systemImage: "pencil")
-                                    }
-                                    .tint(.orange)
                                 }
                             }
-                        } footer: {
-                            Text("Tip: run any workflow from Siri — \"Run a SuperSiri workflow\" — or from the Shortcuts app.")
+
+                            Text("Run any workflow from Siri — \"Run a SuperSiri workflow\" — or the Shortcuts app. Long-press a card to edit.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.top, 12)
+                                .padding(.horizontal, 24)
                         }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                        .padding(.bottom, 80)
                     }
                 }
             }
@@ -67,6 +60,7 @@ struct WorkflowListView: View {
                         showingNewWorkflow = true
                     } label: {
                         Image(systemName: "plus")
+                            .fontWeight(.semibold)
                     }
                 }
             }
@@ -77,5 +71,56 @@ struct WorkflowListView: View {
                 WorkflowEditorView(workflow: workflow)
             }
         }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 20) {
+            IconTile(systemName: "bolt.fill", size: 84)
+
+            VStack(spacing: 6) {
+                Text("Automate anything")
+                    .font(Theme.display(26))
+                Text("Chain AI steps together — summarize, then draft;\ncritique, then plan. Each step can use a different model.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            Button {
+                showingNewWorkflow = true
+            } label: {
+                Label("New workflow", systemImage: "plus")
+            }
+            .buttonStyle(EmberButtonStyle())
+            .padding(.horizontal, 48)
+        }
+        .padding()
+    }
+
+    private func workflowRow(_ workflow: Workflow) -> some View {
+        HStack(spacing: 14) {
+            IconTile(systemName: workflow.icon)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(workflow.name)
+                    .font(Theme.display(16, weight: .semibold))
+                    .foregroundStyle(.primary)
+                Text(workflow.summary.isEmpty ? "\(workflow.steps.count) steps" : workflow.summary)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+
+            Spacer()
+
+            HStack(spacing: 3) {
+                Text("\(workflow.steps.count)")
+                    .font(Theme.display(14, weight: .semibold))
+                Image(systemName: "bolt.fill")
+                    .font(.caption2)
+            }
+            .foregroundStyle(Theme.ember)
+        }
+        .cardStyle()
     }
 }

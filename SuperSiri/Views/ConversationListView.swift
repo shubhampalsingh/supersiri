@@ -8,34 +8,32 @@ struct ConversationListView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ZStack {
+                Theme.backdrop
+
                 if conversations.isEmpty {
-                    ContentUnavailableView(
-                        "No chats yet",
-                        systemImage: "sparkles",
-                        description: Text("Start a conversation with SuperSiri — it combines the best AI models in one place.")
-                    )
+                    emptyState
                 } else {
-                    List {
-                        ForEach(conversations) { conversation in
-                            NavigationLink(value: conversation) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(conversation.title)
-                                        .font(.headline)
-                                        .lineLimit(1)
-                                    HStack(spacing: 6) {
-                                        Text(conversation.model.displayName)
-                                            .font(.caption)
-                                            .foregroundStyle(.purple)
-                                        Text(conversation.updatedAt, style: .relative)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
+                    ScrollView {
+                        LazyVStack(spacing: 10) {
+                            ForEach(conversations) { conversation in
+                                NavigationLink(value: conversation) {
+                                    conversationRow(conversation)
+                                }
+                                .buttonStyle(.plain)
+                                .contextMenu {
+                                    Button(role: .destructive) {
+                                        context.delete(conversation)
+                                        try? context.save()
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
                                     }
                                 }
-                                .padding(.vertical, 2)
                             }
                         }
-                        .onDelete(perform: delete)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                        .padding(.bottom, 80)
                     }
                 }
             }
@@ -51,11 +49,72 @@ struct ConversationListView: View {
                     Button {
                         startNewChat()
                     } label: {
-                        Image(systemName: "square.and.pencil")
+                        Image(systemName: "plus")
+                            .fontWeight(.semibold)
                     }
                 }
             }
         }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 20) {
+            BrandOrb(size: 96, animated: true)
+
+            VStack(spacing: 6) {
+                Text("Your AI, supercharged")
+                    .font(Theme.display(26))
+                Text("The best models. Real actions on your phone.\nOne conversation away.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            Button {
+                startNewChat()
+            } label: {
+                Label("Start chatting", systemImage: "sparkles")
+            }
+            .buttonStyle(EmberButtonStyle())
+            .padding(.horizontal, 48)
+        }
+        .padding()
+    }
+
+    private func conversationRow(_ conversation: Conversation) -> some View {
+        HStack(spacing: 14) {
+            BrandOrb(size: 42)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(conversation.title)
+                    .font(Theme.display(16, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+
+                HStack(spacing: 6) {
+                    if conversation.superpowersEnabled {
+                        Image(systemName: "wand.and.stars")
+                            .font(.caption2)
+                            .foregroundStyle(Theme.ember)
+                    }
+                    Text(conversation.model.displayName)
+                        .font(.caption)
+                        .foregroundStyle(Theme.ember)
+                    Text("·")
+                        .foregroundStyle(.tertiary)
+                    Text(conversation.updatedAt, style: .relative)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
+        }
+        .cardStyle()
     }
 
     private func startNewChat() {
@@ -63,12 +122,5 @@ struct ConversationListView: View {
         context.insert(conversation)
         try? context.save()
         newConversation = conversation
-    }
-
-    private func delete(at offsets: IndexSet) {
-        for index in offsets {
-            context.delete(conversations[index])
-        }
-        try? context.save()
     }
 }
