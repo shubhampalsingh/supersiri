@@ -25,6 +25,8 @@ targets:
         UILaunchScreen: {}
         NSMicrophoneUsageDescription: SuperSiri uses the microphone so you can talk to your AI assistant.
         NSSpeechRecognitionUsageDescription: SuperSiri transcribes your voice into prompts for the AI assistant.
+        NSCalendarsFullAccessUsageDescription: SuperSiri can check your schedule and create events when you ask it to.
+        NSRemindersFullAccessUsageDescription: SuperSiri can list and create reminders when you ask it to.
         ITSAppUsesNonExemptEncryption: false
     settings:
       base:

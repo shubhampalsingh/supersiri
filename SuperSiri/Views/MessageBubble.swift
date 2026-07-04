@@ -4,6 +4,7 @@ struct MessageBubble: View {
     let role: MessageRole
     let text: String
     var thinking: String = ""
+    var imageData: Data?
     var modelName: String?
 
     @State private var showThinking = false
@@ -17,6 +18,14 @@ struct MessageBubble: View {
                     Text(modelName)
                         .font(.caption2)
                         .foregroundStyle(.secondary)
+                }
+
+                if let imageData, let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: 220, maxHeight: 220)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
 
                 if role == .assistant, !thinking.isEmpty {

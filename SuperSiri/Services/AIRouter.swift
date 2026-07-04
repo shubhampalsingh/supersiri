@@ -27,6 +27,26 @@ final class AIRouter {
         service(for: model.provider).streamCompletion(model: model, system: system, turns: turns)
     }
 
+    /// Agentic completion with device tools (Calendar, Reminders, Memory) and
+    /// web search. Tool use runs on Anthropic models; if an OpenAI model is
+    /// selected, this transparently falls back to plain streaming.
+    func streamAgentCompletion(
+        model: AIModel,
+        system: String? = nil,
+        turns: [AITurn]
+    ) -> AsyncThrowingStream<AIStreamEvent, Error> {
+        let effectiveSystem = (system ?? SuperSiriPersona.systemPrompt) + """
+        \n\nYou can act on the user's iPhone through your tools (calendar, \
+        reminders, memory, web search). Use them proactively when the request \
+        implies an action or needs current information — don't just describe \
+        what the user could do. After acting, confirm what you did in one line.
+        """
+        guard model.provider == .anthropic else {
+            return streamCompletion(model: model, system: effectiveSystem, turns: turns)
+        }
+        return AnthropicAgent().run(model: model, system: effectiveSystem, turns: turns)
+    }
+
     func complete(
         model: AIModel,
         system: String? = SuperSiriPersona.systemPrompt,

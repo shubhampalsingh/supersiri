@@ -1,9 +1,34 @@
 import Foundation
 
+/// A piece of content inside a turn.
+enum AIContent {
+    case text(String)
+    /// Raw image bytes plus MIME type (e.g. "image/jpeg").
+    case image(data: Data, mediaType: String)
+}
+
 /// A single turn passed to an AI provider.
 struct AITurn {
     let role: MessageRole
-    let text: String
+    let content: [AIContent]
+
+    init(role: MessageRole, text: String) {
+        self.role = role
+        self.content = [.text(text)]
+    }
+
+    init(role: MessageRole, content: [AIContent]) {
+        self.role = role
+        self.content = content
+    }
+
+    /// Concatenated text content (ignores images).
+    var text: String {
+        content.compactMap {
+            if case .text(let value) = $0 { return value }
+            return nil
+        }.joined(separator: "\n")
+    }
 }
 
 /// Incremental events emitted while a model streams its answer.
@@ -12,6 +37,8 @@ enum AIStreamEvent {
     case text(String)
     /// A chunk of summarized reasoning (Claude adaptive thinking).
     case thinking(String)
+    /// A human-readable progress update (e.g. "Checking your calendar…").
+    case status(String)
     /// The stream finished successfully.
     case done
 }
@@ -21,6 +48,7 @@ enum AIServiceError: LocalizedError {
     case httpError(status: Int, body: String)
     case invalidResponse
     case refused(String)
+    case toolFailed(name: String, reason: String)
 
     var errorDescription: String? {
         switch self {
@@ -32,6 +60,8 @@ enum AIServiceError: LocalizedError {
             return "The AI service returned an unexpected response."
         case .refused(let reason):
             return "The model declined this request. \(reason)"
+        case .toolFailed(let name, let reason):
+            return "The \(name) action failed: \(reason)"
         }
     }
 }
@@ -62,7 +92,7 @@ extension AIService {
 
 /// Default system prompt that gives SuperSiri its personality.
 enum SuperSiriPersona {
-    static let systemPrompt = """
+    static let basePrompt = """
     You are SuperSiri, a personal AI assistant living on the user's iPhone. \
     Be genuinely useful: give direct answers first, keep responses concise and \
     scannable on a phone screen, and use short paragraphs or tight lists. \
@@ -70,4 +100,14 @@ enum SuperSiriPersona {
     copy — no meta-commentary. If a request is ambiguous, make a sensible \
     assumption and note it in one line rather than asking questions.
     """
+
+    /// Base persona plus everything SuperSiri remembers about the user.
+    static var systemPrompt: String {
+        var prompt = basePrompt
+        let memory = MemoryStore.shared.promptSection
+        if !memory.isEmpty {
+            prompt += "\n\n" + memory
+        }
+        return prompt
+    }
 }

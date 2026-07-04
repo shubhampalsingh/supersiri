@@ -103,13 +103,37 @@ final class AnthropicService: AIService {
 
     // MARK: - Request building
 
+    /// Converts app content into Messages API content blocks.
+    /// Images precede text, per API guidance.
+    static func contentBlocks(for content: [AIContent]) -> [[String: Any]] {
+        var blocks: [[String: Any]] = []
+        for item in content {
+            if case .image(let data, let mediaType) = item {
+                blocks.append([
+                    "type": "image",
+                    "source": [
+                        "type": "base64",
+                        "media_type": mediaType,
+                        "data": data.base64EncodedString(),
+                    ],
+                ])
+            }
+        }
+        for item in content {
+            if case .text(let text) = item, !text.isEmpty {
+                blocks.append(["type": "text", "text": text])
+            }
+        }
+        return blocks
+    }
+
     static func makeRequest(apiKey: String, model: AIModel, system: String?, turns: [AITurn]) throws -> URLRequest {
         var body: [String: Any] = [
             "model": model.id,
             "max_tokens": maxTokens,
             "stream": true,
             "thinking": ["type": "adaptive", "display": "summarized"],
-            "messages": turns.map { ["role": $0.role.rawValue, "content": $0.text] },
+            "messages": turns.map { ["role": $0.role.rawValue, "content": contentBlocks(for: $0.content)] },
         ]
         if let system, !system.isEmpty {
             body["system"] = system

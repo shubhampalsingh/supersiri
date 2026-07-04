@@ -24,11 +24,13 @@ final class OpenAIService: AIService {
                         throw AIServiceError.missingAPIKey(.openai)
                     }
 
-                    var messages: [[String: String]] = []
+                    var messages: [[String: Any]] = []
                     if let system, !system.isEmpty {
                         messages.append(["role": "system", "content": system])
                     }
-                    messages.append(contentsOf: turns.map { ["role": $0.role.rawValue, "content": $0.text] })
+                    messages.append(contentsOf: turns.map { turn -> [String: Any] in
+                        ["role": turn.role.rawValue, "content": Self.contentParts(for: turn.content)]
+                    })
 
                     let body: [String: Any] = [
                         "model": model.id,
@@ -77,6 +79,21 @@ final class OpenAIService: AIService {
                 }
             }
             continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    /// Converts app content into Chat Completions content parts.
+    private static func contentParts(for content: [AIContent]) -> [[String: Any]] {
+        content.map { item in
+            switch item {
+            case .text(let text):
+                return ["type": "text", "text": text]
+            case .image(let data, let mediaType):
+                return [
+                    "type": "image_url",
+                    "image_url": ["url": "data:\(mediaType);base64,\(data.base64EncodedString())"],
+                ]
+            }
         }
     }
 }

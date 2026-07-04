@@ -4,6 +4,10 @@
 
 ## Features
 
+- **Superpowers (agent mode)** — the AI doesn't just talk, it *acts*. With the wand toggle on, Claude can check and create **Calendar events**, list and create **Reminders**, save facts to **Memory**, and **search the web** — deciding on its own when to use each tool ("clear my Friday and remind me to call mom at 6" just works). Live status pills show what it's doing.
+- **Memory** — SuperSiri remembers durable facts about you across conversations (preferences, names, context) and personalizes every answer. Review or delete everything in Settings → Memory; stored only on-device.
+- **Vision** — attach a photo to any message: whiteboards → notes, menus → recommendations, screenshots → answers.
+- **Voice Mode** — a hands-free, Siri-style conversation screen: talk, pause, hear the answer, keep talking. Tap the orb to interrupt.
 - **Multi-model chat** — talk to Claude Opus 4.8, Claude Sonnet 5, Claude Haiku 4.5, GPT-5.1, and GPT-5.1 mini. Switch models mid-conversation from the toolbar.
 - **Live streaming** — responses stream in token by token, including Claude's summarized reasoning ("Reasoning" disclosure on each answer).
 - **Workflows (automations)** — chain AI steps together with `{{input}}` / `{{previous}}` templating. Each step can use a different model (e.g. Haiku to summarize, Opus to draft). Ships with three starter workflows: *Summarize & Reply*, *Daily Briefing*, and *Idea → Action Plan*.
@@ -18,13 +22,14 @@
 SuperSiri/
 ├── App/            App entry point, root tab view, shared SwiftData container
 ├── Models/         AIModel catalog, Conversation/ChatMessage, Workflow (SwiftData)
-├── Services/       AnthropicService, OpenAIService (SSE streaming clients),
-│                   AIRouter (provider routing + auto model pick),
-│                   KeychainService, SpeechService (STT + TTS)
+├── Services/       AnthropicService + AnthropicAgent (tool-use loop, web search),
+│                   OpenAIService, AIRouter (provider routing + auto model pick),
+│                   AgentTools (EventKit Calendar/Reminders + Memory tools),
+│                   MemoryStore, KeychainService, SpeechService (STT + TTS)
 ├── Workflows/      WorkflowEngine — runs step chains with live progress
 ├── Intents/        App Intents: AskSuperSiri, RunWorkflow, Siri shortcut phrases
 ├── ViewModels/     ChatViewModel — streaming chat state
-└── Views/          Chat, conversation list, workflow editor/runner, settings
+└── Views/          Chat, voice mode, workflow editor/runner, memory, settings
 ```
 
 ## Getting started
@@ -52,6 +57,8 @@ Requires **Xcode 15+** and **iOS 17+**.
 ## How the AI integration works
 
 - **Anthropic** — direct calls to the [Messages API](https://platform.claude.com/docs) (`POST /v1/messages`) with `stream: true`, parsing the SSE events (`content_block_delta` → `text_delta` / `thinking_delta`). Requests use adaptive thinking (`thinking: {type: "adaptive", display: "summarized"}`) so the app can show the model's reasoning summary. Default model: `claude-opus-4-8`.
+- **Agent mode** (`AnthropicAgent`) — when Superpowers is on, requests include tool definitions (Calendar, Reminders, Memory) plus Anthropic's server-side `web_search_20260209` tool. The client runs the standard tool-use loop: execute each `tool_use` block on-device via EventKit, return `tool_result` blocks, repeat until `end_turn` (with `pause_turn` handling for server tools). Assistant content — including thinking blocks — is echoed back verbatim each round.
+- **Vision** — attached photos are sent as base64 `image` content blocks (Anthropic) or `image_url` data URIs (OpenAI).
 - **OpenAI** — direct calls to the Chat Completions API with `stream: true`, parsing `choices[].delta.content` chunks.
 - Both clients implement a shared `AIService` protocol that yields an `AsyncThrowingStream<AIStreamEvent>`, so the UI, workflow engine, and Siri intents are provider-agnostic.
 
@@ -61,8 +68,8 @@ Model IDs live in `SuperSiri/Models/AIModel.swift`. To add or update a model (ne
 
 ## Roadmap ideas
 
-- Tool use / function calling so workflows can touch Calendar, Reminders, and HomeKit
-- Image input (camera + photo library → vision models)
-- Web search-augmented answers
-- iCloud sync for conversations and workflows
-- Widgets and Lock Screen quick-ask
+- More device tools: Contacts, Maps, Music, HomeKit
+- Camera capture (photo library input is done)
+- Streaming inside agent mode (per-token instead of per-step)
+- iCloud sync for conversations, workflows, and memory
+- Widgets, Lock Screen quick-ask, Action Button integration, keyboard extension

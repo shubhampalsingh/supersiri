@@ -38,6 +38,16 @@ struct SettingsView: View {
                     Text("Get a key at platform.openai.com. Powers the GPT models.")
                 }
 
+                Section {
+                    NavigationLink {
+                        MemorySettingsView()
+                    } label: {
+                        Label("Memory", systemImage: "brain.head.profile")
+                    }
+                } footer: {
+                    Text("Facts SuperSiri has learned about you. They're injected into every conversation and stored only on this device.")
+                }
+
                 Section("Privacy") {
                     Label {
                         Text("Keys are stored only in your device's Keychain and sent only to the provider you chose.")
