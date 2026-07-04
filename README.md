@@ -4,9 +4,9 @@
 
 ## Features
 
-- **Superpowers (agent mode)** — the AI doesn't just talk, it *acts*. With the wand toggle on, Claude can check and create **Calendar events**, list and create **Reminders**, save facts to **Memory**, and **search the web** — deciding on its own when to use each tool ("clear my Friday and remind me to call mom at 6" just works). Live status pills show what it's doing.
+- **Superpowers (agent mode)** — the AI doesn't just talk, it *acts*. With the wand toggle on, Claude can check and create **Calendar events**, list and create **Reminders**, look up **Contacts**, find **Places** near you (with Apple Maps links), switch **HomeKit** lights/outlets on and off, save facts to **Memory**, and **search the web** — deciding on its own when to use and chain each tool ("find Anna's number and remind me to call her at 6" just works). Live status pills show what it's doing.
 - **Memory** — SuperSiri remembers durable facts about you across conversations (preferences, names, context) and personalizes every answer. Review or delete everything in Settings → Memory; stored only on-device.
-- **Vision** — attach a photo to any message: whiteboards → notes, menus → recommendations, screenshots → answers.
+- **Vision** — attach a photo from your library or snap one with the camera: whiteboards → notes, menus → recommendations, screenshots → answers.
 - **Voice Mode** — a hands-free, Siri-style conversation screen: talk, pause, hear the answer, keep talking. Tap the orb to interrupt.
 - **Multi-model chat** — talk to Claude Opus 4.8, Claude Sonnet 5, Claude Haiku 4.5, GPT-5.1, and GPT-5.1 mini. Switch models mid-conversation from the toolbar.
 - **Live streaming** — responses stream in token by token, including Claude's summarized reasoning ("Reasoning" disclosure on each answer).
@@ -68,8 +68,7 @@ Model IDs live in `SuperSiri/Models/AIModel.swift`. To add or update a model (ne
 
 ## Roadmap ideas
 
-- More device tools: Contacts, Maps, Music, HomeKit
-- Camera capture (photo library input is done)
+- More device tools: Music, Messages drafts, Health
 - Streaming inside agent mode (per-token instead of per-step)
 - iCloud sync for conversations, workflows, and memory
 - Widgets, Lock Screen quick-ask, Action Button integration, keyboard extension

@@ -21,6 +21,10 @@ enum AgentToolbox {
             ListRemindersTool(),
             CreateReminderTool(),
             RememberFactTool(),
+            SearchContactsTool(),
+            SearchPlacesTool(),
+            ListHomeDevicesTool(),
+            SetHomeDeviceTool(),
         ]
     }
 }

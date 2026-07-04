@@ -36,10 +36,13 @@ final class AIRouter {
         turns: [AITurn]
     ) -> AsyncThrowingStream<AIStreamEvent, Error> {
         let effectiveSystem = (system ?? SuperSiriPersona.systemPrompt) + """
-        \n\nYou can act on the user's iPhone through your tools (calendar, \
-        reminders, memory, web search). Use them proactively when the request \
-        implies an action or needs current information — don't just describe \
-        what the user could do. After acting, confirm what you did in one line.
+        \n\nYou can act on the user's iPhone through your tools: calendar, \
+        reminders, contacts, place search, HomeKit devices, long-term memory, \
+        and web search. Use them proactively when the request implies an \
+        action or needs current information — don't just describe what the \
+        user could do. Chain tools when needed (e.g. search_contacts before \
+        drafting a message to someone). After acting, confirm what you did in \
+        one line.
         """
         guard model.provider == .anthropic else {
             return streamCompletion(model: model, system: effectiveSystem, turns: turns)

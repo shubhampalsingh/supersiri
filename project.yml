@@ -18,6 +18,10 @@ targets:
     platform: iOS
     sources:
       - path: SuperSiri
+    entitlements:
+      path: SuperSiri/Resources/SuperSiri.entitlements
+      properties:
+        com.apple.developer.homekit: true
     info:
       path: SuperSiri/Resources/Info.plist
       properties:
@@ -27,6 +31,10 @@ targets:
         NSSpeechRecognitionUsageDescription: SuperSiri transcribes your voice into prompts for the AI assistant.
         NSCalendarsFullAccessUsageDescription: SuperSiri can check your schedule and create events when you ask it to.
         NSRemindersFullAccessUsageDescription: SuperSiri can list and create reminders when you ask it to.
+        NSContactsUsageDescription: SuperSiri can look up contact details when you ask it to reach someone.
+        NSCameraUsageDescription: SuperSiri uses the camera so you can snap a photo and ask about it.
+        NSLocationWhenInUseUsageDescription: SuperSiri uses your location to find places near you when you ask.
+        NSHomeKitUsageDescription: SuperSiri can control your smart home devices when you ask it to.
         ITSAppUsesNonExemptEncryption: false
     settings:
       base:

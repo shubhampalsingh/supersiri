@@ -11,6 +11,9 @@ struct ChatView: View {
     @State private var photoItem: PhotosPickerItem?
     @State private var attachedImage: Data?
     @State private var showVoiceMode = false
+    @State private var showAttachmentOptions = false
+    @State private var showPhotoLibrary = false
+    @State private var showCamera = false
     @FocusState private var inputFocused: Bool
 
     var body: some View {
@@ -46,6 +49,25 @@ struct ChatView: View {
         }
         .fullScreenCover(isPresented: $showVoiceMode) {
             VoiceModeView(conversation: conversation)
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraPicker { data in
+                attachedImage = data
+            }
+            .ignoresSafeArea()
+        }
+        .photosPicker(isPresented: $showPhotoLibrary, selection: $photoItem, matching: .images)
+        .confirmationDialog("Attach a photo", isPresented: $showAttachmentOptions) {
+            Button {
+                showCamera = true
+            } label: {
+                Label("Take Photo", systemImage: "camera")
+            }
+            Button {
+                showPhotoLibrary = true
+            } label: {
+                Label("Photo Library", systemImage: "photo.on.rectangle")
+            }
         }
         .onChange(of: speech.transcript) { _, transcript in
             if !transcript.isEmpty { draft = transcript }
@@ -147,7 +169,9 @@ struct ChatView: View {
             }
 
             HStack(alignment: .bottom, spacing: 10) {
-                PhotosPicker(selection: $photoItem, matching: .images) {
+                Button {
+                    showAttachmentOptions = true
+                } label: {
                     Image(systemName: "plus")
                         .font(.body.weight(.semibold))
                         .foregroundStyle(Theme.ember)
