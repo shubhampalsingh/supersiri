@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Primary SEO -->
+  <title>SuperSiri — The AI Super-Assistant for iPhone | Claude & GPT in One App</title>
+  <meta name="description" content="SuperSiri puts Claude and GPT's best models on your iPhone — and gives them hands. It manages your calendar, sets reminders, controls your smart home, remembers you, and talks hands-free. Open source and private by design.">
+  <link rel="canonical" href="https://shubhampalsingh.github.io/supersiri/">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#17171e">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SuperSiri">
+  <meta property="og:title" content="SuperSiri — Siri asks. SuperSiri acts.">
+  <meta property="og:description" content="The world's best AI models with real hands on your iPhone: calendar, reminders, contacts, smart home, memory, and the web. Say it once — it's done.">
+  <meta property="og:url" content="https://shubhampalsingh.github.io/supersiri/">
+  <meta property="og:image" content="https://shubhampalsingh.github.io/supersiri/og.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SuperSiri — Siri asks. SuperSiri acts.">
+  <meta name="twitter:description" content="Claude + GPT on your iPhone, with real hands: calendar, smart home, memory, voice. Open source, private by design.">
+  <meta name="twitter:image" content="https://shubhampalsingh.github.io/supersiri/og.png">
+
+  <!-- Favicon: the ember orb -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='38%25' cy='32%25' r='75%25'%3E%3Cstop offset='0%25' stop-color='%23ffb84d'/%3E%3Cstop offset='55%25' stop-color='%23fa734d'/%3E%3Cstop offset='100%25' stop-color='%2317171e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3C/svg%3E">
+
+  <!-- Structured data: software + FAQ rich results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SuperSiri",
+    "operatingSystem": "iOS 17.0 or later",
+    "applicationCategory": "UtilitiesApplication",
+    "description": "An open-source AI super-assistant for iPhone that combines Anthropic Claude and OpenAI GPT models with on-device agent tools: calendar, reminders, contacts, places, HomeKit, memory, vision, voice mode, and multi-step AI workflows.",
+    "url": "https://shubhampalsingh.github.io/supersiri/",
+    "downloadUrl": "https://github.com/shubhampalsingh/supersiri",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Shubhampal Singh", "url": "https://github.com/shubhampalsingh" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is SuperSiri?",
+        "acceptedAnswer": { "@type": "Answer", "text": "SuperSiri is an open-source AI assistant app for iPhone that combines Anthropic's Claude and OpenAI's GPT models in one place — and gives them the ability to act: manage your calendar and reminders, look up contacts, find places, control HomeKit devices, remember facts about you, and search the web." }
+      },
+      {
+        "@type": "Question",
+        "name": "Which AI models does SuperSiri support?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Claude Opus 4.8, Claude Sonnet 5, Claude Haiku 4.5, GPT-5.1, and GPT-5.1 mini. You can switch models mid-conversation, and the model catalog is one Swift file away from adding more." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is SuperSiri free?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — the app is free and open source. You bring your own API key from Anthropic or OpenAI and pay those providers only for what you use. There is no subscription and no middleman markup." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my data private?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. API keys are stored in the iOS Keychain and never leave your device except to the AI provider you chose. Conversations, workflows, and memory are stored on-device. There is no SuperSiri server in between." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does SuperSiri replace Siri?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Apple doesn't allow replacing Siri, but SuperSiri gets close: say \"Ask SuperSiri\" to Siri to route questions to Claude or GPT, use the hands-free Voice Mode for continuous conversation, and trigger AI workflows from the Shortcuts app, Focus modes, or automations." }
+      },
+      {
+        "@type": "Question",
+        "name": "What can SuperSiri automate?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Two ways: agent mode lets the AI act directly — create events, set reminders, switch HomeKit devices, look up contacts and places. Workflows chain multiple AI steps together (summarize, then draft; critique, then plan) with a different model per step, runnable from Siri or Shortcuts." }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --ink: #131318;
+      --ink-2: #1b1b23;
+      --card: #20202a;
+      --hairline: rgba(255, 255, 255, 0.08);
+      --text: #f4f2ee;
+      --muted: #a8a5a0;
+      --ember: #fa734d;
+      --amber: #ffb84d;
+      --accent: linear-gradient(135deg, #fa734d, #ffb84d);
+      --radius: 20px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--ink);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; }
+    ::selection { background: rgba(250, 115, 77, 0.4); }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+    /* ---------- Nav ---------- */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(19, 19, 24, 0.75);
+      border-bottom: 1px solid var(--hairline);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 24px; max-width: 1080px; margin: 0 auto;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; text-decoration: none; }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a { text-decoration: none; color: var(--muted); font-size: 15px; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #fff !important;
+      padding: 10px 20px; border-radius: 14px;
+      font-weight: 600; text-decoration: none; font-size: 15px;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 24px rgba(250, 115, 77, 0.35);
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(250, 115, 77, 0.5); }
+    .btn.ghost {
+      background: var(--card); box-shadow: none;
+      border: 1px solid var(--hairline); color: var(--text) !important;
+    }
+    .btn.ghost:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+
+    /* ---------- Orb ---------- */
+    .orb {
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 30%, var(--amber), var(--ember) 55%, var(--ink) 100%);
+      box-shadow: 0 0 60px rgba(250, 115, 77, 0.45);
+    }
+    .orb.small { width: 28px; height: 28px; box-shadow: 0 0 16px rgba(250, 115, 77, 0.5); }
+
+    /* ---------- Hero ---------- */
+    header.hero {
+      position: relative; text-align: center;
+      padding: 96px 24px 64px;
+    }
+    .hero::before {
+      content: ""; position: absolute; inset: 0; z-index: -1;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(250, 115, 77, 0.16), transparent 70%),
+        radial-gradient(ellipse 40% 30% at 80% 20%, rgba(255, 184, 77, 0.08), transparent 70%);
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--amber);
+      border: 1px solid rgba(255, 184, 77, 0.25);
+      background: rgba(255, 184, 77, 0.07);
+      padding: 6px 14px; border-radius: 999px; margin-bottom: 28px;
+    }
+    h1 {
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 1.05; font-weight: 800; letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+    h1 .grad {
+      background: var(--accent);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+    }
+    .sub {
+      font-size: clamp(17px, 2.4vw, 21px); color: var(--muted);
+      max-width: 640px; margin: 0 auto 36px;
+    }
+    .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+    .stats {
+      display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+      color: var(--muted); font-size: 15px;
+    }
+    .stats b { color: var(--text); font-size: 22px; display: block; font-weight: 800; }
+
+    /* ---------- Phone demo ---------- */
+    .phone {
+      width: min(360px, 90vw); margin: 64px auto 0;
+      background: var(--ink-2);
+      border: 1px solid var(--hairline);
+      border-radius: 44px; padding: 18px 14px 22px;
+      box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 80px rgba(250,115,77,0.08);
+      text-align: left;
+    }
+    .phone .notch { width: 110px; height: 22px; background: var(--ink); border-radius: 999px; margin: 0 auto 18px; }
+    .bubble { max-width: 85%; padding: 11px 15px; border-radius: 20px; font-size: 14.5px; line-height: 1.45; margin-bottom: 10px; }
+    .bubble.user { background: var(--accent); color: #fff; margin-left: auto; border-bottom-right-radius: 6px; }
+    .bubble.ai { background: var(--card); border: 1px solid var(--hairline); border-bottom-left-radius: 6px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--muted);
+      background: var(--card); border: 1px solid var(--hairline);
+      padding: 5px 12px; border-radius: 999px; margin: 0 0 10px 4px;
+    }
+    .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ember); animation: pulse 1.2s infinite; }
+    @keyframes pulse { 50% { opacity: 0.3; } }
+
+    /* ---------- Sections ---------- */
+    section { padding: 88px 0; }
+    .section-head { text-align: center; max-width: 620px; margin: 0 auto 56px; }
+    h2 { font-size: clamp(30px, 4.5vw, 44px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 14px; }
+    .section-head p { color: var(--muted); font-size: 17px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+    .card {
+      background: var(--card); border: 1px solid var(--hairline);
+      border-radius: var(--radius); padding: 28px;
+      transition: transform .25s, border-color .25s;
+    }
+    .card:hover { transform: translateY(-4px); border-color: rgba(250, 115, 77, 0.35); }
+    .card .icon {
+      width: 46px; height: 46px; border-radius: 14px;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 18px;
+    }
+    .card h3 { font-size: 19px; margin-bottom: 8px; font-weight: 700; }
+    .card p { color: var(--muted); font-size: 15px; }
+    .card p b { color: var(--text); font-weight: 600; }
+
+    /* ---------- Steps ---------- */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; counter-reset: step; }
+    .step { background: var(--ink-2); border: 1px solid var(--hairline); border-radius: var(--radius); padding: 28px; position: relative; }
+    .step::before {
+      counter-increment: step; content: counter(step);
+      display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center;
+      background: var(--accent); border-radius: 10px; font-weight: 800; margin-bottom: 16px;
+    }
+    .step h3 { font-size: 18px; margin-bottom: 6px; }
+    .step p { color: var(--muted); font-size: 15px; }
+    .step code { background: var(--ink); padding: 2px 8px; border-radius: 6px; font-size: 13px; color: var(--amber); }
+
+    /* ---------- Tools ticker ---------- */
+    .tools { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .tool {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--card); border: 1px solid var(--hairline);
+      padding: 10px 18px; border-radius: 999px; font-size: 15px; font-weight: 500;
+    }
+
+    /* ---------- Privacy ---------- */
+    .privacy {
+      background: var(--ink-2); border: 1px solid var(--hairline);
+      border-radius: 28px; padding: 56px 40px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .privacy::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 50% 60% at 50% 100%, rgba(250,115,77,0.1), transparent 70%);
+    }
+    .privacy > * { position: relative; }
+    .privacy h2 { margin-bottom: 12px; }
+    .privacy p { color: var(--muted); max-width: 560px; margin: 0 auto 8px; }
+
+    /* ---------- FAQ ---------- */
+    details {
+      background: var(--card); border: 1px solid var(--hairline);
+      border-radius: 16px; padding: 20px 24px; margin-bottom: 10px;
+    }
+    summary { font-weight: 600; font-size: 17px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    summary::after { content: "+"; font-size: 22px; color: var(--ember); transition: transform .2s; }
+    details[open] summary::after { transform: rotate(45deg); }
+    details p { color: var(--muted); margin-top: 12px; font-size: 15.5px; }
+
+    /* ---------- Footer ---------- */
+    footer {
+      border-top: 1px solid var(--hairline);
+      padding: 40px 24px; text-align: center; color: var(--muted); font-size: 14px;
+    }
+    footer a { color: var(--amber); text-decoration: none; }
+    footer .brand { justify-content: center; margin-bottom: 12px; }
+
+    @media (max-width: 640px) {
+      .nav-links a:not(.btn) { display: none; }
+      section { padding: 64px 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav aria-label="Main">
+    <div class="nav-inner">
+      <a class="brand" href="#top"><span class="orb small" aria-hidden="true"></span>SuperSiri</a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+        <a class="btn ghost" href="https://github.com/shubhampalsingh/supersiri" rel="noopener">GitHub&nbsp;→</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <span class="eyebrow">✦ For iPhone · Powered by Claude &amp; GPT</span>
+    <h1>Siri asks.<br><span class="grad">SuperSiri acts.</span></h1>
+    <p class="sub">One app. The world's best AI models. And real hands on your phone — calendar, reminders, contacts, smart home, memory, and the web. Say it once. It's done.</p>
+    <div class="cta-row">
+      <a class="btn" href="https://github.com/shubhampalsingh/supersiri" rel="noopener">Get SuperSiri free</a>
+      <a class="btn ghost" href="#features">See what it does</a>
+    </div>
+    <div class="stats" role="list">
+      <div role="listitem"><b>5</b> frontier models</div>
+      <div role="listitem"><b>9</b> device tools</div>
+      <div role="listitem"><b>0</b> servers in between</div>
+    </div>
+
+    <div class="phone" aria-label="SuperSiri demo conversation">
+      <div class="notch" aria-hidden="true"></div>
+      <div class="bubble user">Find Anna's number and remind me to call her at 6</div>
+      <div class="chip"><span class="dot" aria-hidden="true"></span>Looking up contacts…</div><br>
+      <div class="chip"><span class="dot" aria-hidden="true"></span>Creating a reminder…</div>
+      <div class="bubble ai">Done ✓ Anna Kapoor — +91 98••• ••210.<br>Reminder set for <b>6:00 PM today</b>: “Call Anna.”</div>
+      <div class="bubble user">Also dim the living room lights</div>
+      <div class="bubble ai">Turned Living Room Lamp off. Anything else?</div>
+    </div>
+  </header>
+
+  <main>
+    <section id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>An assistant with actual superpowers</h2>
+          <p>Every AI app can talk. SuperSiri is built around one idea: the best assistant is the one that <em>does the thing</em>.</p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="icon" aria-hidden="true">🪄</div>
+            <h3>Agent mode</h3>
+            <p>Claude decides when to <b>check your calendar</b>, <b>set reminders</b>, <b>look up contacts</b>, <b>find places</b>, or <b>flip HomeKit switches</b> — and chains tools on its own. “Clear my Friday and remind me to prep Thursday” just… happens.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">🎙️</div>
+            <h3>Voice Mode</h3>
+            <p>A hands-free, full-screen conversation. Talk, pause, hear the answer, keep going. <b>Tap the orb to interrupt.</b> It's the Siri conversation you always wanted to have.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">🧠</div>
+            <h3>Memory</h3>
+            <p>SuperSiri remembers what matters — your preferences, your people, your projects — and brings it to every conversation. <b>You see and control every fact</b> in Settings.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">📷</div>
+            <h3>Vision</h3>
+            <p>Snap a whiteboard, a menu, a broken appliance, an error screen. <b>Camera or photo library</b> — the AI sees what you see and answers about it.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">⚡</div>
+            <h3>Workflows</h3>
+            <p>Chain AI steps into automations: summarize → draft a reply, critique → plan. <b>A different model per step</b> — fast ones for grunt work, the smartest for the finish.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">🗣️</div>
+            <h3>Siri &amp; Shortcuts</h3>
+            <p>Say <b>“Ask SuperSiri”</b> from anywhere. Run workflows from the Shortcuts app, Focus modes, NFC tags, or time-of-day automations. It plugs into everything iOS can trigger.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="models" style="padding-top: 0;">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>The best model for every moment</h2>
+          <p>Switch mid-conversation. Watch Claude's reasoning unfold. Or let smart routing pick for you — fast models for quick asks, frontier models for hard ones.</p>
+        </div>
+        <div class="tools" role="list">
+          <span class="tool" role="listitem">Claude Opus 4.8</span>
+          <span class="tool" role="listitem">Claude Sonnet 5</span>
+          <span class="tool" role="listitem">Claude Haiku 4.5</span>
+          <span class="tool" role="listitem">GPT-5.1</span>
+          <span class="tool" role="listitem">GPT-5.1 mini</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" style="padding-top: 24px;">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Running in three minutes</h2>
+          <p>Open source. Build it yourself, own it forever.</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <h3>Clone &amp; build</h3>
+            <p><code>git clone</code> the repo, run <code>xcodegen generate</code>, hit ⌘R in Xcode. A free Apple ID is enough.</p>
+          </div>
+          <div class="step">
+            <h3>Add your key</h3>
+            <p>Paste an Anthropic or OpenAI API key in Settings. It goes straight into your iPhone's Keychain — nowhere else. Either key alone works.</p>
+          </div>
+          <div class="step">
+            <h3>Say the word</h3>
+            <p>Ask anything. Flip on Superpowers and watch it act. Say “Ask SuperSiri” to Siri from across the room.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="privacy" style="padding-top: 0;">
+      <div class="wrap">
+        <div class="privacy">
+          <h2>Private by architecture,<br>not by promise</h2>
+          <p>There is no SuperSiri server. Your prompts travel from your iPhone directly to the AI provider you chose — and nowhere else.</p>
+          <p>Keys live in the iOS Keychain. Conversations, workflows, and memory live on your device. The code is open source, so you don't have to take our word for any of it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" style="padding-top: 0;">
+      <div class="wrap" style="max-width: 720px;">
+        <div class="section-head">
+          <h2>Questions, answered</h2>
+        </div>
+        <details>
+          <summary>What is SuperSiri?</summary>
+          <p>An open-source AI assistant app for iPhone that combines Anthropic's Claude and OpenAI's GPT models in one place — and gives them the ability to act: manage your calendar and reminders, look up contacts, find places, control HomeKit devices, remember facts about you, and search the web.</p>
+        </details>
+        <details>
+          <summary>Which AI models does it support?</summary>
+          <p>Claude Opus 4.8, Claude Sonnet 5, Claude Haiku 4.5, GPT-5.1, and GPT-5.1 mini. Switch mid-conversation from the toolbar — the model catalog is one Swift file, so adding new releases takes a minute.</p>
+        </details>
+        <details>
+          <summary>Is it free?</summary>
+          <p>The app is free and open source. You bring your own API key from Anthropic or OpenAI and pay those providers only for what you use — no subscription, no markup, no middleman.</p>
+        </details>
+        <details>
+          <summary>How private is it?</summary>
+          <p>API keys are stored in the iOS Keychain and sent only to the provider you chose. Conversations, workflows, and memory never leave your device. There's no analytics SDK and no SuperSiri backend — the architecture makes tracking impossible, not just unlikely.</p>
+        </details>
+        <details>
+          <summary>Does it replace Siri?</summary>
+          <p>Apple doesn't allow replacing Siri outright, but SuperSiri gets remarkably close: “Ask SuperSiri” routes questions from Siri to Claude or GPT, Voice Mode gives you continuous hands-free conversation, and every workflow is a Shortcuts action you can wire to Focus modes, automations, or the Action Button.</p>
+        </details>
+        <details>
+          <summary>What can it actually automate?</summary>
+          <p>In agent mode the AI acts directly — creating events, setting reminders, switching lights, finding contact details, searching places and the web, chaining several tools in one request. Workflows go further: multi-step AI pipelines (summarize → draft, critique → plan) with a different model per step, runnable by voice.</p>
+        </details>
+      </div>
+    </section>
+
+    <section style="padding-top: 0; text-align: center;">
+      <div class="wrap">
+        <h2 style="margin-bottom: 16px;">Your iPhone is about to get<br><span style="background: var(--accent); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">a lot more capable</span></h2>
+        <p style="color: var(--muted); margin-bottom: 32px;">Free. Open source. Three minutes to build.</p>
+        <a class="btn" href="https://github.com/shubhampalsingh/supersiri" rel="noopener" style="font-size: 17px; padding: 14px 32px;">Get SuperSiri on GitHub →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand"><span class="orb small" aria-hidden="true"></span>SuperSiri</div>
+    <p>Open source under the terms in the <a href="https://github.com/shubhampalsingh/supersiri" rel="noopener">repository</a>.<br>
+    Not affiliated with Apple, Anthropic, or OpenAI. Siri is a trademark of Apple Inc.</p>
+  </footer>
+
+</body>
+</html>

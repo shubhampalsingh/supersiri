@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shubhampalsingh.github.io/supersiri/sitemap.xml
